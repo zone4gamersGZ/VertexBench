@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Vertex Bench</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+  }
+
+  body {
+    background: #0f172a;
+    color: #e5e7eb;
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 800px;
+    background: #020617;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.6);
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 6px;
+    color: #38bdf8;
+    font-size: 32px;
+    letter-spacing: 1px;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 90px;
+    resize: none;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #1e293b;
+    background: #020617;
+    color: #e5e7eb;
+    font-size: 14px;
+    outline: none;
+  }
+
+  textarea::placeholder {
+    color: #64748b;
+  }
+
+  button {
+    margin-top: 12px;
+    padding: 10px 22px;
+    border-radius: 8px;
+    border: none;
+    background: #38bdf8;
+    color: #020617;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  button:hover {
+    background: #0ea5e9;
+  }
+
+  .response-box {
+    margin-top: 20px;
+    padding: 15px;
+    background: #020617;
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    font-size: 14px;
+  }
+
+  .thinking {
+    color: #facc15;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 12px;
+    color: #64748b;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Vertex Bench</h1>
+  <div class="subtitle">AI-powered PC performance & build advisor</div>
+
+  <textarea id="question" placeholder="Ask about PC parts, gaming performance, budgets, or upgrades..."></textarea>
+
+  <button onclick="askAI()">Analyze</button>
+
+  <div id="answer" class="response-box"></div>
+
+  <div class="footer">
+    Local AI • CPU-only • Private
+  </div>
+</div>
+
+<script>
+const BACKEND_URL = "https://weariful-dexterously-rozanne.ngrok-free.dev/chat";
+let isLoading = false;
+
+async function askAI() {
+  if (isLoading) return;
+
+  const inputEl = document.getElementById("question");
+  const output = document.getElementById("answer");
+  const button = document.querySelector("button");
+
+  const input = inputEl.value.trim();
+  if (!input) {
+    output.innerText = "⚠️ Please enter a question.";
+    return;
+  }
+
+  // Lock UI
+  isLoading = true;
+  button.disabled = true;
+  button.innerText = "Analyzing...";
+  output.innerHTML = "<span class='thinking'>Analyzing…</span>";
+
+  // Abort controller for timeout
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
+
+  try {
+    const res = await fetch(BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: input }),
+      signal: controller.signal
+    });
+
+    const data = await res.json();
+    output.innerText = data.reply ?? "⚠️ No response from AI.";
+
+  } catch (err) {
+    output.innerText =
+      err.name === "AbortError"
+        ? "⏱️ AI took too long. Try a shorter question."
+        : "❌ Unable to reach the AI engine.";
+  } finally {
+    clearTimeout(timeout);
+    isLoading = false;
+    button.disabled = false;
+    button.innerText = "Analyze";
+  }
+}
+
+// Submit on Ctrl+Enter
+document.getElementById("question").addEventListener("keydown", e => {
+  if (e.ctrlKey && e.key === "Enter") {
+    askAI();
+  }
+});
+</script>
+
+
+</body>
+</html>
