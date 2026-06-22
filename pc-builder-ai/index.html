@@ -2,121 +2,835 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Vertex Bench</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vertex Bench — AI-Powered PC Analysis</title>
 <style>
-  * {
-    box-sizing: border-box;
-    font-family: "Segoe UI", Arial, sans-serif;
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #f5f5f5;
+    --card:      #ffffff;
+    --text:      #1c1c1c;
+    --btn-pri:   #1c1c1c;
+    --btn-pri-t: #f5f5f5;
+    --btn-sec:   #ffffff;
+    --btn-sec-t: #1c1c1c;
+    --accent:    #15479c;
+    --accent-bg: #a8cce8;
+    --muted:     #6b7280;
+    --border:    #e5e7eb;
+    --radius:    12px;
   }
+
+  html { scroll-behavior: smooth; }
 
   body {
-    background: #0f172a;
-    color: #e5e7eb;
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 5%;
     display: flex;
-    justify-content: center;
-    padding: 40px;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
   }
 
-  .container {
-    width: 100%;
-    max-width: 800px;
-    background: #020617;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.6);
+  .nav-logo {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
-  h1 {
-    text-align: center;
-    margin-bottom: 6px;
-    color: #38bdf8;
-    font-size: 32px;
-    letter-spacing: 1px;
+  .nav-logo .dot {
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
   }
 
-  .subtitle {
-    text-align: center;
-    color: #94a3b8;
-    font-size: 14px;
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color .2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-cta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: opacity .2s, transform .15s;
+  }
+
+  .btn:hover { opacity: .85; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-primary { background: var(--btn-pri); color: var(--btn-pri-t); }
+  .btn-secondary { background: var(--btn-sec); color: var(--btn-sec-t); border: 1.5px solid var(--border); }
+  .btn-accent { background: var(--accent); color: #fff; }
+
+  .btn-lg { padding: 14px 30px; font-size: 1rem; border-radius: 10px; }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 100px 5% 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-bg);
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 99px;
     margin-bottom: 20px;
   }
 
-  textarea {
-    width: 100%;
-    min-height: 90px;
-    resize: none;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #1e293b;
-    background: #020617;
-    color: #e5e7eb;
-    font-size: 14px;
-    outline: none;
+  .hero h1 {
+    font-size: clamp(2.2rem, 4vw, 3.4rem);
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.15;
+    margin-bottom: 20px;
   }
 
-  textarea::placeholder {
-    color: #64748b;
+  .hero h1 span { color: var(--accent); }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 1.05rem;
+    margin-bottom: 32px;
+    max-width: 480px;
   }
 
-  button {
-    margin-top: 12px;
-    padding: 10px 22px;
-    border-radius: 8px;
-    border: none;
-    background: #38bdf8;
-    color: #020617;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* hero visual */
+  .hero-visual {
+    background: var(--card);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
   }
 
-  button:hover {
-    background: #0ea5e9;
+  .hero-visual::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: var(--accent-bg);
+    border-radius: 50%;
+    opacity: .35;
   }
 
-  .response-box {
+  .score-ring {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  .ring {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: conic-gradient(var(--accent) 270deg, var(--accent-bg) 270deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .ring::after {
+    content: '';
+    width: 60px; height: 60px;
+    background: var(--card);
+    border-radius: 50%;
+    position: absolute;
+  }
+
+  .ring-label {
+    position: relative;
+    z-index: 1;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--accent);
+  }
+
+  .score-info h3 { font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
+  .score-info p { font-size: 0.8rem; color: var(--muted); }
+
+  .metric-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .metric {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .metric-label { font-size: 0.8rem; color: var(--muted); width: 60px; flex-shrink: 0; }
+
+  .bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--bg);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: var(--accent);
+    transition: width 1s ease;
+  }
+
+  .metric-val { font-size: 0.8rem; font-weight: 700; width: 36px; text-align: right; }
+
+  .ai-chip {
     margin-top: 20px;
-    padding: 15px;
-    background: #020617;
-    border: 1px solid #1e293b;
-    border-radius: 8px;
-    max-height: 300px;
-    overflow-y: auto;
-    white-space: pre-wrap;
-    line-height: 1.6;
-    font-size: 14px;
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 0.82rem;
+    color: var(--text);
+    border: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
   }
 
-  .thinking {
-    color: #facc15;
+  .ai-chip .chip-icon {
+    color: var(--accent);
+    font-size: 1rem;
+    flex-shrink: 0;
   }
 
-  .footer {
+  /* ── STATS STRIP ── */
+  .stats-strip {
+    background: var(--btn-pri);
+    color: var(--btn-pri-t);
+    display: flex;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .stat-item {
+    flex: 1;
+    max-width: 220px;
+    padding: 28px 20px;
     text-align: center;
-    margin-top: 18px;
-    font-size: 12px;
-    color: #64748b;
+    border-right: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-num {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: var(--accent-bg);
+  }
+
+  .stat-desc {
+    font-size: 0.8rem;
+    opacity: .65;
+    margin-top: 2px;
+  }
+
+  /* ── SECTION SHARED ── */
+  section { padding: 90px 5%; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+
+  .section-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 16px;
+  }
+
+  .section-sub {
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 560px;
+  }
+
+  /* ── FEATURES ── */
+  #features { background: var(--card); }
+
+  .features-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .features-header .section-sub { margin: 0 auto; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .feature-card {
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 28px;
+    border: 1px solid var(--border);
+    transition: box-shadow .25s, transform .25s;
+  }
+
+  .feature-card:hover {
+    box-shadow: 0 8px 32px rgba(21,71,156,.1);
+    transform: translateY(-3px);
+  }
+
+  .feature-icon {
+    width: 48px; height: 48px;
+    background: var(--accent-bg);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 18px;
+  }
+
+  .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+  .feature-card p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── HOW IT WORKS ── */
+  #how {
+    background: var(--bg);
+  }
+
+  .how-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    margin-top: 50px;
+  }
+
+  .steps { display: flex; flex-direction: column; gap: 28px; }
+
+  .step {
+    display: flex;
+    gap: 18px;
+  }
+
+  .step-num {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .step-content h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+  .step-content p { font-size: 0.85rem; color: var(--muted); }
+
+  .how-visual {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid var(--border);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.07);
+  }
+
+  .chat-bubble {
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+    max-width: 88%;
+    line-height: 1.5;
+  }
+
+  .chat-user {
+    background: var(--btn-pri);
+    color: var(--btn-pri-t);
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+  }
+
+  .chat-ai {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+
+  .chat-sender {
+    font-size: 0.72rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--muted);
+  }
+
+  .chat-ai .chat-sender { color: var(--accent); }
+
+  /* ── CTA BAND ── */
+  .cta-band {
+    background: var(--accent);
+    color: #fff;
+    text-align: center;
+    padding: 80px 5%;
+  }
+
+  .cta-band h2 {
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 14px;
+  }
+
+  .cta-band p {
+    opacity: .8;
+    font-size: 1rem;
+    margin-bottom: 32px;
+  }
+
+  .cta-band .btn-primary {
+    background: #fff;
+    color: var(--accent);
+  }
+
+  /* ── ADVISOR SECTION ── */
+  #advisor { background: var(--bg); }
+
+  .advisor-wrap {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .advisor-card {
+    background: var(--card);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.07);
+    overflow: hidden;
+  }
+
+  .advisor-header {
+    background: var(--btn-pri);
+    color: var(--btn-pri-t);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .advisor-header .av-icon {
+    width: 40px; height: 40px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .advisor-header-text h3 { font-size: 0.95rem; font-weight: 700; }
+  .advisor-header-text p { font-size: 0.78rem; opacity: .6; }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    margin-left: auto;
+    box-shadow: 0 0 6px #22c55e;
+  }
+
+  .advisor-body { padding: 28px; }
+
+  .advisor-body textarea {
+    width: 100%;
+    min-height: 100px;
+    resize: none;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 0.9rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .2s;
+  }
+
+  .advisor-body textarea:focus { border-color: var(--accent); }
+  .advisor-body textarea::placeholder { color: var(--muted); }
+
+  .advisor-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+  }
+
+  .advisor-hint { font-size: 0.78rem; color: var(--muted); }
+
+  #answer {
+    margin-top: 20px;
+    padding: 18px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    min-height: 60px;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    color: var(--text);
+    display: none;
+  }
+
+  #answer.visible { display: block; }
+  .thinking-text { color: var(--accent); font-style: italic; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--btn-pri);
+    color: rgba(255,255,255,.5);
+    padding: 48px 5%;
+  }
+
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .footer-brand {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+
+  .footer-note { font-size: 0.8rem; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; padding: 60px 5% 40px; }
+    .hero-visual { display: none; }
+    .how-grid { grid-template-columns: 1fr; }
+    .how-visual { display: none; }
+    .nav-links { display: none; }
+    .stats-strip { flex-wrap: wrap; }
+    .stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,.1); }
   }
 </style>
 </head>
-
 <body>
 
-<div class="container">
-  <h1>Vertex Bench</h1>
-  <div class="subtitle">AI-powered PC performance & build advisor</div>
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <span class="dot"></span>
+    Vertex Bench
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#advisor">AI Advisor</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="#advisor" class="btn btn-secondary">Try for free</a>
+    <a href="#advisor" class="btn btn-primary">Analyze My PC</a>
+  </div>
+</nav>
 
-  <textarea id="question" placeholder="Ask about PC parts, gaming performance, budgets, or upgrades..."></textarea>
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-text">
+    <div class="hero-badge">&#9889; AI-Powered Analysis</div>
+    <h1>Understand Your PC.<br><span>Upgrade Smarter.</span></h1>
+    <p>Vertex Bench analyzes your computer's performance and delivers personalized hardware recommendations — powered by local AI, with zero data sent to the cloud.</p>
+    <div class="hero-actions">
+      <a href="#advisor" class="btn btn-primary btn-lg">Analyze My PC</a>
+      <a href="#how" class="btn btn-secondary btn-lg">See How It Works</a>
+    </div>
+  </div>
 
-  <button onclick="askAI()">Analyze</button>
+  <div class="hero-visual">
+    <div class="score-ring">
+      <div class="ring">
+        <span class="ring-label">75</span>
+      </div>
+      <div class="score-info">
+        <h3>Performance Score</h3>
+        <p>Good — upgrades available</p>
+      </div>
+    </div>
 
-  <div id="answer" class="response-box"></div>
+    <div class="metric-row">
+      <div class="metric">
+        <span class="metric-label">CPU</span>
+        <div class="bar-track"><div class="bar-fill" style="width:82%"></div></div>
+        <span class="metric-val">82%</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">GPU</span>
+        <div class="bar-track"><div class="bar-fill" style="width:67%"></div></div>
+        <span class="metric-val">67%</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">RAM</span>
+        <div class="bar-track"><div class="bar-fill" style="width:55%"></div></div>
+        <span class="metric-val">55%</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Storage</span>
+        <div class="bar-track"><div class="bar-fill" style="width:90%"></div></div>
+        <span class="metric-val">90%</span>
+      </div>
+    </div>
 
-  <div class="footer">
-    Local AI • CPU-only • Private
+    <div class="ai-chip">
+      <span class="chip-icon">&#129302;</span>
+      <span>Your GPU is your bottleneck. Upgrading to an RTX 4060 would boost gaming FPS by ~40%.</span>
+    </div>
   </div>
 </div>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stat-item">
+    <div class="stat-num">50K+</div>
+    <div class="stat-desc">PCs Analyzed</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">200+</div>
+    <div class="stat-desc">Components Indexed</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">100%</div>
+    <div class="stat-desc">Private &amp; Local</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">&#60;2s</div>
+    <div class="stat-desc">Average Response</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-inner">
+    <div class="features-header">
+      <div class="section-tag">Features</div>
+      <h2 class="section-title">Everything you need to know about your PC</h2>
+      <p class="section-sub">From raw benchmarks to upgrade paths, Vertex Bench gives you the full picture.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">&#128200;</div>
+        <h3>Performance Benchmarking</h3>
+        <p>Get detailed scores for CPU, GPU, RAM, and storage — with context about where your system stands vs. current-gen hardware.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#129302;</div>
+        <h3>AI Hardware Advisor</h3>
+        <p>Ask anything. Our local AI understands your exact setup and gives tailored upgrade recommendations that fit your budget.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128269;</div>
+        <h3>Bottleneck Detection</h3>
+        <p>Instantly identify which component is holding back your system — before you spend money on the wrong upgrade.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128176;</div>
+        <h3>Budget-Aware Builds</h3>
+        <p>Tell us your budget and your goals. Get curated part lists with price-to-performance rankings and alternatives.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128274;</div>
+        <h3>100% Private — No Cloud</h3>
+        <p>All analysis runs locally on your machine. Your hardware data never leaves your network. Ever.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#9889;</div>
+        <h3>Instant Compatibility Check</h3>
+        <p>Verify that any new part works with your existing motherboard, PSU, and case before you buy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-inner">
+    <div class="section-tag">How it works</div>
+    <h2 class="section-title">From question to recommendation in seconds</h2>
+
+    <div class="how-grid">
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h3>Describe your setup</h3>
+            <p>Tell the AI your current specs, what you use your PC for, and your budget range.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h3>AI analyzes your system</h3>
+            <p>The model cross-references your components against thousands of benchmark data points to surface real bottlenecks.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h3>Get personalized advice</h3>
+            <p>Receive specific part recommendations with rationale — not generic lists, but picks tuned to your exact situation.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h3>Ask follow-up questions</h3>
+            <p>Drill deeper. Compare parts, ask about compatibility, or explore different budget scenarios — it's a conversation.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="how-visual">
+        <div class="chat-bubble chat-user">
+          <div class="chat-sender">You</div>
+          I have an RTX 2060 and a Ryzen 5 3600. Would upgrading to a 4070 make a big difference for 1440p gaming?
+        </div>
+        <div class="chat-bubble chat-ai">
+          <div class="chat-sender">Vertex AI</div>
+          Yes — the RTX 4070 is a massive leap from the 2060. At 1440p you can expect 60–90% higher frame rates in demanding titles. Your Ryzen 5 3600 pairs fine with it; you won't hit a CPU bottleneck at 1440p. If budget is tight, the RTX 4070 Super adds ~15% more performance for ~$50 extra and is worth considering.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<div class="cta-band">
+  <h2>Ready to unlock your PC's true potential?</h2>
+  <p>No signup. No cloud. Just answers — powered by local AI.</p>
+  <a href="#advisor" class="btn btn-primary btn-lg">Start Analyzing Free</a>
+</div>
+
+<!-- AI ADVISOR -->
+<section id="advisor">
+  <div class="advisor-wrap">
+    <div style="text-align:center; margin-bottom:40px;">
+      <div class="section-tag">AI Advisor</div>
+      <h2 class="section-title">Ask anything about your PC</h2>
+      <p class="section-sub" style="margin:0 auto;">Upgrades, compatibility, performance, budgets — our local AI has you covered.</p>
+    </div>
+
+    <div class="advisor-card">
+      <div class="advisor-header">
+        <div class="av-icon">&#129302;</div>
+        <div class="advisor-header-text">
+          <h3>Vertex AI Advisor</h3>
+          <p>Local model · CPU-only · Private</p>
+        </div>
+        <div class="status-dot"></div>
+      </div>
+
+      <div class="advisor-body">
+        <textarea id="question" placeholder="e.g. My PC has an i5-10400F and a GTX 1660 Super. Best GPU upgrade under $300 for 1080p gaming?"></textarea>
+        <div class="advisor-actions">
+          <span class="advisor-hint">Ctrl + Enter to send</span>
+          <button class="btn btn-accent" onclick="askAI()" id="analyzeBtn">Analyze &#9889;</button>
+        </div>
+        <div id="answer"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">&#9679; Vertex Bench</div>
+    <div class="footer-note">AI-powered PC analysis · Local &amp; Private · Built for enthusiasts</div>
+    <div class="footer-note">&#169; 2025 Vertex Bench</div>
+  </div>
+</footer>
 
 <script>
 const BACKEND_URL = "https://weariful-dexterously-rozanne.ngrok-free.dev/chat";
@@ -126,27 +840,27 @@ async function askAI() {
   if (isLoading) return;
 
   const inputEl = document.getElementById("question");
-  const output = document.getElementById("answer");
-  const button = document.querySelector("button");
+  const output  = document.getElementById("answer");
+  const btn     = document.getElementById("analyzeBtn");
 
   const input = inputEl.value.trim();
   if (!input) {
-    output.innerText = "⚠️ Please enter a question.";
+    output.className = "visible";
+    output.innerText = "Please enter a question first.";
     return;
   }
 
-  // Lock UI
   isLoading = true;
-  button.disabled = true;
-  button.innerText = "Analyzing...";
-  output.innerHTML = "<span class='thinking'>Analyzing…</span>";
+  btn.disabled = true;
+  btn.innerText = "Analyzing…";
+  output.className = "visible";
+  output.innerHTML = "<span class='thinking-text'>Analyzing your hardware…</span>";
 
-  // Abort controller for timeout
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
+  const timeout = setTimeout(() => controller.abort(), 60000);
 
   try {
-    const res = await fetch(BACKEND_URL, {
+    const res  = await fetch(BACKEND_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: input }),
@@ -154,29 +868,24 @@ async function askAI() {
     });
 
     const data = await res.json();
-    output.innerText = data.reply ?? "⚠️ No response from AI.";
+    output.innerText = data.reply ?? "No response from AI. Please try again.";
 
   } catch (err) {
-    output.innerText =
-      err.name === "AbortError"
-        ? "⏱️ AI took too long. Try a shorter question."
-        : "❌ Unable to reach the AI engine.";
+    output.innerText = err.name === "AbortError"
+      ? "The AI took too long. Try a shorter or simpler question."
+      : "Unable to reach the AI engine. Make sure the backend is running.";
   } finally {
     clearTimeout(timeout);
     isLoading = false;
-    button.disabled = false;
-    button.innerText = "Analyze";
+    btn.disabled = false;
+    btn.innerHTML = "Analyze &#9889;";
   }
 }
 
-// Submit on Ctrl+Enter
 document.getElementById("question").addEventListener("keydown", e => {
-  if (e.ctrlKey && e.key === "Enter") {
-    askAI();
-  }
+  if (e.ctrlKey && e.key === "Enter") askAI();
 });
 </script>
-
 
 </body>
 </html>
